@@ -17,31 +17,31 @@ import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 
 public class CustomPortals implements ModInitializer, WorldComponentInitializer {
 
         public static final String MOD_ID = "customportals";
 
         public static final ComponentKey<BasePortalComponent> PORTALS = ComponentRegistryV3.INSTANCE
-                .getOrCreate(Identifier.of("customportals:portals"), BasePortalComponent.class);
+                .getOrCreate(ResourceLocation.parse("customportals:portals"), BasePortalComponent.class);
 
-        public static final RegistryKey<ItemGroup> PORTALS_ITEM_GROUP = RegistryKey.of(RegistryKeys.ITEM_GROUP,
-                Identifier.of(CustomPortals.MOD_ID, "general"));
+        public static final ResourceKey<CreativeModeTab> PORTALS_ITEM_GROUP = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
+                ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "general"));
 
         @Override
         public void onInitialize() {
-                Registry.register(Registries.ITEM_GROUP, PORTALS_ITEM_GROUP, FabricItemGroup.builder().icon(()
+                Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, PORTALS_ITEM_GROUP, FabricItemGroup.builder().icon(()
                         -> new ItemStack(CPItems.PURPLE_PORTAL_CATALYST))
-                        .displayName(Text.translatable("itemGroup.customportals.general")).build());
+                        .title(Component.translatable("itemGroup.customportals.general")).build());
                 CPSettings.load();
                 CPBlocks.registerBlocks();
                 CPItems.registerItems();

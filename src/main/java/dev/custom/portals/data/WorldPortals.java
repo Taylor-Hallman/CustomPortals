@@ -3,20 +3,20 @@ package dev.custom.portals.data;
 import dev.custom.portals.CustomPortals;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 
 public class WorldPortals extends PortalComponent implements AutoSyncedComponent {
-    private World world;
+    private Level world;
 
-    public WorldPortals(World world) { this.world = world; }
+    public WorldPortals(Level world) { this.world = world; }
 
-    public World getWorld() { return world; }
+    public Level getWorld() { return world; }
 
     @Override
     public void syncWithAll(MinecraftServer server) {
-        Iterable<ServerWorld> worlds = server.getWorlds();
-        for (ServerWorld serverWorld : worlds) {
+        Iterable<ServerLevel> worlds = server.getAllLevels();
+        for (ServerLevel serverWorld : worlds) {
             CustomPortals.PORTALS.get(serverWorld).setPortalRegistry(this.getPortalRegistry());
         }
     }

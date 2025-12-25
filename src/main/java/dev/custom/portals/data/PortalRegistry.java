@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class PortalRegistry {
 

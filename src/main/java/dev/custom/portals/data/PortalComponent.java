@@ -1,9 +1,9 @@
 package dev.custom.portals.data;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.BlockPos;
 
 public class PortalComponent implements BasePortalComponent {
 
@@ -50,7 +50,7 @@ public class PortalComponent implements BasePortalComponent {
     }*/
 
     @Override
-    public void readData(ReadView readView) {
+    public void readData(ValueInput readView) {
         var portals = readView.read("portals", CustomPortal.CODEC.listOf());
         if (portals.isEmpty()) {
             return;
@@ -61,8 +61,8 @@ public class PortalComponent implements BasePortalComponent {
     }
 
     @Override
-    public void writeData(WriteView writeView) {
-        writeView.put("portals", CustomPortal.CODEC.listOf(), portalRegistry.getPortals());
+    public void writeData(ValueOutput writeView) {
+        writeView.store("portals", CustomPortal.CODEC.listOf(), portalRegistry.getPortals());
     }
     
     @Override

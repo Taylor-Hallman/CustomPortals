@@ -1,17 +1,11 @@
 package dev.custom.portals.mixin;
 
 import dev.custom.portals.CustomPortals;
-import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.CustomPortal;
 import dev.custom.portals.util.DrawSpritePayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.Portal;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.WorldProperties;
-import net.minecraft.world.dimension.PortalManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.PortalProcessor;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,17 +15,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import dev.custom.portals.util.EntityMixinAccess;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
-import java.util.Collections;
-import java.util.Set;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityMixinAccess {
@@ -51,29 +38,29 @@ public abstract class EntityMixin implements EntityMixinAccess {
 
     @Shadow
     @Nullable
-    public PortalManager portalManager;
+    public PortalProcessor portalProcess;
     @Shadow
-    private World world;
+    private Level level;
     @Shadow
-    private BlockPos blockPos;
+    private BlockPos blockPosition;
 
     @Inject(method = "baseTick", at = @At("TAIL"))
     public void baseTick(CallbackInfo ci) {
-        if (!inCustomPortal && packetSent && ((Entity)(Object)this) instanceof ServerPlayerEntity && !inTransition) {
-            ServerPlayNetworking.send(((ServerPlayerEntity)(Object)this), new DrawSpritePayload(0));
+        if (!inCustomPortal && packetSent && ((Entity)(Object)this) instanceof ServerPlayer && !inTransition) {
+            ServerPlayNetworking.send(((ServerPlayer)(Object)this), new DrawSpritePayload(0));
             packetSent = false;
         }
     }
 
-    @Inject(method = "tickPortalTeleportation", at = @At("TAIL"))
+    @Inject(method = "handlePortal", at = @At("TAIL"))
     protected void tickPortalTeleportation(CallbackInfo ci) {
-        if (world instanceof ServerWorld) {
+        if (level instanceof ServerLevel) {
             if (this.inCustomPortal) {
-                if (((Entity) (Object) this) instanceof ServerPlayerEntity && !packetSent) {
-                    ServerPlayNetworking.send(((ServerPlayerEntity) (Object) this), new DrawSpritePayload(this.portalColor));
+                if (((Entity) (Object) this) instanceof ServerPlayer && !packetSent) {
+                    ServerPlayNetworking.send(((ServerPlayer) (Object) this), new DrawSpritePayload(this.portalColor));
                     packetSent = true;
                 }
-                if (this.portalManager == null) {
+                if (this.portalProcess == null) {
                     this.destPortal = null;
                     this.inCustomPortal = false;
                     this.portalColor = 0;
@@ -84,7 +71,7 @@ public abstract class EntityMixin implements EntityMixinAccess {
 
     @Unique
     public void setInCustomPortal(CustomPortal customPortal) {
-        if (this.portalManager != null) {
+        if (this.portalProcess != null) {
             this.destPortal = customPortal.getLinked();
             this.inCustomPortal = true;
             this.portalColor = customPortal.getColor().id;
@@ -183,7 +170,7 @@ public abstract class EntityMixin implements EntityMixinAccess {
     @Unique
     public int getPortalColor() {
         if (portalColor == 0) {
-            CustomPortal portal = CustomPortals.PORTALS.get(world).getPortalFromPos(blockPos);
+            CustomPortal portal = CustomPortals.PORTALS.get(level).getPortalFromPos(blockPosition);
             portalColor = portal == null ? 0 : portal.getColor().id;
         }
         return portalColor;

@@ -5,11 +5,11 @@
     "compatibilityLevel": "JAVA_21",
     "mixins": [
       "EntityMixin",
-      "ServerPlayerEntityMixin"
+      "ServerPlayerMixin"
     ],
     "client": [
-      "ClientPlayerEntityMixin",
-      "InGameHudMixin",
+      "LocalPlayerMixin",
+      "GuiMixin",
       "LevelLoadingScreenMixin"
     ],
     "server": [],
