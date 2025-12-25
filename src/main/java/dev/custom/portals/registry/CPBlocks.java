@@ -42,7 +42,7 @@ public class CPBlocks {
         // Portal Blocks
         public static final Block BLACK_PORTAL = new PortalBlock(
                 FabricBlockSettings.create().mapColor(MapColor.BLACK).nonOpaque().noCollision().ticksRandomly()
-                .strength(-1.0F).sounds(BlockSoundGroup.GLASS).luminance(createLightLevelFromLitBlockState(11)));
+                .strength(-1.0F).sounds(BlockSoundGroup.GLASS));
         public static final Block BLUE_PORTAL = new PortalBlock(
                 FabricBlockSettings.create().mapColor(MapColor.BLUE).nonOpaque().noCollision().ticksRandomly()
                 .strength(-1.0F).sounds(BlockSoundGroup.GLASS).luminance(createLightLevelFromLitBlockState(11)));
