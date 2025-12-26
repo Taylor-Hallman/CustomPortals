@@ -40,6 +40,9 @@ public class PortalComponent implements BasePortalComponent {
     }
 
     @Override
+    public void verifyPortals() {}
+
+    @Override
     public void tryWithAll(Portal portal) {
         portalRegistry.tryWithAll(portal);
     }
@@ -94,7 +97,7 @@ public class PortalComponent implements BasePortalComponent {
                     hasteRunes, gateRunes, weakEnhancerRunes, strongEnhancerRunes, infinityRunes);
             registerPortal(portal);
         }
-
+        verifyPortals();
     }
 
     @Override

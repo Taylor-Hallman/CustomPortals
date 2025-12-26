@@ -11,6 +11,7 @@ public interface BasePortalComponent extends ComponentV3 {
     void setPortalRegistry(PortalRegistry portalRegistry);
     void registerPortal(Portal portal);
     void unregisterPortal(Portal portal);
+    void verifyPortals();
     void tryWithAll(Portal portal);
     void refreshPortals();
     //void clearPortals();
