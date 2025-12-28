@@ -27,13 +27,11 @@ public class WorldPortals extends PortalComponent implements AutoSyncedComponent
         for (Portal portal : portals) {
             if (!world.getRegistryKey().getValue().toString().equals(portal.getDimensionId()))
                 continue;
-            for (BlockPos pos : portal.getPortalBlocks()) {
-                if (!(world.getBlockState(pos).getBlock() instanceof PortalBlock)) {
-                    Logger logger = LoggerFactory.getLogger(CustomPortals.MOD_ID);
-                    logger.error("Found portal registered at a location with missing portal block instances! This is a bugged portal that should not exist, so it will be deleted.");
-                    buggedPortals.add(portal);
-                    break;
-                }
+            if (!(world.getBlockState(portal.getSpawnPos()).getBlock() instanceof PortalBlock)) {
+                Logger logger = LoggerFactory.getLogger(CustomPortals.MOD_ID);
+                logger.error("Found portal registered at a location where no portal should be; this should never happen! The glitched portal will be deleted.");
+                buggedPortals.add(portal);
+                break;
             }
         }
         for (Portal portal : buggedPortals) {

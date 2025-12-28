@@ -11,6 +11,8 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -44,6 +46,13 @@ public class CustomPortals implements ModInitializer, WorldComponentInitializer 
                 CPBlocks.registerBlocks();
                 CPItems.registerItems();
                 CPParticles.registerParticles();
+                ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
+                        PORTALS.get(serverWorld).syncWithAll(minecraftServer);
+                        PORTALS.get(serverWorld).verifyPortals();
+                });
+                ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+                        PORTALS.get(destination).verifyPortals();
+                });
         }
 
         @Override

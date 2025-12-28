@@ -97,7 +97,6 @@ public class PortalComponent implements BasePortalComponent {
                     hasteRunes, gateRunes, weakEnhancerRunes, strongEnhancerRunes, infinityRunes);
             registerPortal(portal);
         }
-        verifyPortals();
     }
 
     @Override
