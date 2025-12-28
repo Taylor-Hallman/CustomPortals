@@ -35,6 +35,9 @@ public class PortalComponent implements BasePortalComponent {
     }
 
     @Override
+    public void verifyPortals() {}
+
+    @Override
     public void tryWithAll(CustomPortal portal) {
         portalRegistry.tryWithAll(portal);
     }

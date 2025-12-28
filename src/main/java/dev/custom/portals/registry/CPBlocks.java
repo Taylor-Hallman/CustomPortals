@@ -56,7 +56,7 @@ public class CPBlocks {
         // Portal Blocks
         public static final Block BLACK_PORTAL = new PortalBlock(
                 Block.Settings.create().registryKey(getKey("black_portal")).mapColor(MapColor.BLACK).nonOpaque().noCollision().ticksRandomly()
-                .strength(-1.0F).sounds(BlockSoundGroup.GLASS).luminance(STATE_TO_LUMINANCE));
+                .strength(-1.0F).sounds(BlockSoundGroup.GLASS));
         public static final Block BLUE_PORTAL = new PortalBlock(
                 Block.Settings.create().registryKey(getKey("blue_portal")).mapColor(MapColor.BLUE).nonOpaque().noCollision().ticksRandomly()
                 .strength(-1.0F).sounds(BlockSoundGroup.GLASS).luminance(STATE_TO_LUMINANCE));

@@ -9,8 +9,11 @@ import dev.custom.portals.registry.CPParticles;
 import dev.custom.portals.util.DrawSpritePayload;
 import dev.custom.portals.util.EntityMixinAccess;
 import dev.custom.portals.util.ScreenTransitionPayload;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.world.ServerWorld;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
@@ -52,6 +55,13 @@ public class CustomPortals implements ModInitializer, WorldComponentInitializer 
                         context.server().execute(() -> {
                                 ((EntityMixinAccess)context.player()).setInTransition(payload.isTransitioning());
                         });
+                });
+                ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
+                        PORTALS.get(serverWorld).syncWithAll(minecraftServer);
+                        PORTALS.get(serverWorld).verifyPortals();
+                });
+                ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+                        PORTALS.get(destination).verifyPortals();
                 });
         }
 
