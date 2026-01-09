@@ -3,13 +3,13 @@ package dev.custom.portals.blocks;
 import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.CustomPortal;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -99,30 +100,30 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
       return InteractionResult.TRY_WITH_EMPTY_HAND;
    }
    @Override
-   public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
-      CustomPortal portal = CustomPortals.PORTALS.get(world).getPortalFromPos(pos);
+   public void randomTick(BlockState state, ServerLevel serverLevel, BlockPos pos, RandomSource random) {
+      CustomPortal portal = CustomPortals.PORTALS.get(serverLevel).getPortalFromPos(pos);
       if(portal == null)
          return;
       if(portal.isInterdimensional()) {
-         if (portal.getLinked().getDimensionId().equals("minecraft:the_nether") && world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
-            while(world.getBlockState(pos).is(this)) {
+         if (portal.getLinked().getDimensionId().equals("minecraft:the_nether") && serverLevel.isSpawningMonsters() && random.nextInt(2000) < serverLevel.getDifficulty().getId()) {
+            while(serverLevel.getBlockState(pos).is(this)) {
                pos = pos.below();
             }
   
-            if (world.getBlockState(pos).isValidSpawn(world, pos, EntityType.ZOMBIFIED_PIGLIN)) {
-               Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(world, pos.above(), EntitySpawnReason.STRUCTURE);
+            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityType.ZOMBIFIED_PIGLIN)) {
+               Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
                if (entity != null) {
                   entity.setPortalCooldown();
                }
             }
          }
-         if (portal.getLinked().getDimensionId().equals("minecraft:the_end") && world.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
-            while(world.getBlockState(pos).is(this)) {
+         if (portal.getLinked().getDimensionId().equals("minecraft:the_end") && serverLevel.isSpawningMonsters() && random.nextInt(2000) < serverLevel.getDifficulty().getId()) {
+            while(serverLevel.getBlockState(pos).is(this)) {
                pos = pos.below();
             }
   
-            if (world.getBlockState(pos).isValidSpawn(world, pos, EntityType.ENDERMAN)) {
-               Entity entity = EntityType.ENDERMAN.spawn(world, pos.above(), EntitySpawnReason.STRUCTURE);
+            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityType.ENDERMAN)) {
+               Entity entity = EntityType.ENDERMAN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
                if (entity != null) {
                   entity.setPortalCooldown();
                }
@@ -385,7 +386,7 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
       ServerLevel serverWorld2 = null;
       if(!destDimensionId.equals(dimensionId)) {
          for(ResourceKey<Level> registryKey : minecraftServer.levelKeys()) {
-            if(registryKey.location().toString().equals(destDimensionId)) {
+            if(registryKey.identifier().toString().equals(destDimensionId)) {
                serverWorld2 = minecraftServer.getLevel(registryKey);
             }
          }
@@ -410,11 +411,12 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
    }
 
    @Override
-   public int getPortalTransitionTime(ServerLevel serverWorld, Entity entity) {
+   public int getPortalTransitionTime(ServerLevel serverLevel, Entity entity) {
       CustomPortal destPortal = ((EntityMixinAccess)entity).getDestPortal();
       if (entity instanceof Player playerEntity && destPortal != null) {
-         if (CPSettings.instance().alwaysHaste == CPSettings.HasteEnum.CREATIVE)
-            return Math.max(1, playerEntity.getAbilities().invulnerable ? serverWorld.getGameRules().getInt(GameRules.RULE_PLAYERS_NETHER_PORTAL_CREATIVE_DELAY) : destPortal.getPlayerTeleportDelay());
+         if (CPSettings.instance().alwaysHaste == CPSettings.HasteEnum.CREATIVE) {
+            return Math.max(1, playerEntity.getAbilities().invulnerable ? serverLevel.getGameRules().get(GameRules.PLAYERS_NETHER_PORTAL_CREATIVE_DELAY) : destPortal.getPlayerTeleportDelay());
+         }
          else return destPortal.getPlayerTeleportDelay();
       }
       return 0;

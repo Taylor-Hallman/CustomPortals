@@ -24,7 +24,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 
 public class CustomPortals implements ModInitializer, WorldComponentInitializer {
@@ -32,10 +32,10 @@ public class CustomPortals implements ModInitializer, WorldComponentInitializer 
         public static final String MOD_ID = "customportals";
 
         public static final ComponentKey<BasePortalComponent> PORTALS = ComponentRegistryV3.INSTANCE
-                .getOrCreate(ResourceLocation.parse("customportals:portals"), BasePortalComponent.class);
+                .getOrCreate(Identifier.parse("customportals:portals"), BasePortalComponent.class);
 
         public static final ResourceKey<CreativeModeTab> PORTALS_ITEM_GROUP = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
-                ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "general"));
+                Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "general"));
 
         @Override
         public void onInitialize() {

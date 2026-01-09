@@ -13,7 +13,7 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -25,7 +25,7 @@ public final class CPSettings {
     public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("customportals.json");
 
     public static final ConfigClassHandler<CPSettings> HANDLER = ConfigClassHandler.createBuilder(CPSettings.class)
-            .id(ResourceLocation.fromNamespaceAndPath("customportals", "config"))
+            .id(Identifier.fromNamespaceAndPath("customportals", "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config).setJson5(true)
                     .setPath(CONFIG_PATH).build())
             .build();

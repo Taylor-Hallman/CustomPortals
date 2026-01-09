@@ -5,13 +5,13 @@ import dev.custom.portals.blocks.AbstractRuneBlock;
 import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.CustomPortal;
 import dev.custom.portals.registry.CPBlocks;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -21,8 +21,8 @@ import java.util.*;
 
 public class PortalHelper {
 
-    public static final ResourceLocation DRAW_SPRITE_PACKET_ID = ResourceLocation.fromNamespaceAndPath("customportals", "draw_sprite");
-    public static final ResourceLocation SCREEN_TRANSITION_PACKET_ID = ResourceLocation.fromNamespaceAndPath("customportals", "is_in_transition");
+    public static final Identifier DRAW_SPRITE_PACKET_ID = Identifier.fromNamespaceAndPath("customportals", "draw_sprite");
+    public static final Identifier SCREEN_TRANSITION_PACKET_ID = Identifier.fromNamespaceAndPath("customportals", "is_in_transition");
 
     private static BlockPos getUp(BlockPos pos, Direction.Axis axis) {
         return axis == Direction.Axis.Y ? pos.north() : pos.above();
@@ -211,7 +211,7 @@ public class PortalHelper {
 
         SpawnPosData spawnPosData = determineSpawnPos(portalBlocks, portalBlock, axis, world);
 
-        CustomPortal portal = new CustomPortal(frameId, world.dimension().location().toString(),
+        CustomPortal portal = new CustomPortal(frameId, world.dimension().identifier().toString(),
                 portalBlock.defaultMapColor(), spawnPosData.blockPos, portalBlocks, spawnPosData.offsetX,
                 spawnPosData.offsetZ, creatorId);
         CustomPortals.PORTALS.get(world).registerPortal(portal);

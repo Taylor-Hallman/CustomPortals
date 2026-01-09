@@ -19,12 +19,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class CPBlocks {
 
         private static ResourceKey<Block> getKey(String name) {
-                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, name);
+                Identifier id = Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, name);
                 return ResourceKey.create(Registries.BLOCK, id);
         }
 
@@ -107,27 +107,27 @@ public class CPBlocks {
         public static BlockEntityType<PortalBlockEntity> PORTAL_BLOCK_ENTITY;
 
         public static void registerBlocks() {
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "haste_rune_block"), HASTE_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "gate_rune_block"), GATE_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "weak_enhancer_rune_block"), WEAK_ENHANCER_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "strong_enhancer_rune_block"), STRONG_ENHANCER_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "infinity_rune_block"), INFINITY_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "black_portal"), BLACK_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "blue_portal"), BLUE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "brown_portal"), BROWN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "cyan_portal"), CYAN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "gray_portal"), GRAY_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "green_portal"), GREEN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_blue_portal"), LIGHT_BLUE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_gray_portal"), LIGHT_GRAY_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "lime_portal"), LIME_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "magenta_portal"), MAGENTA_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "orange_portal"), ORANGE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "pink_portal"), PINK_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "purple_portal"), PURPLE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "red_portal"), RED_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "white_portal"), WHITE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(CustomPortals.MOD_ID, "yellow_portal"), YELLOW_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "haste_rune_block"), HASTE_RUNE_BLOCK);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "gate_rune_block"), GATE_RUNE_BLOCK);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "weak_enhancer_rune_block"), WEAK_ENHANCER_RUNE_BLOCK);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "strong_enhancer_rune_block"), STRONG_ENHANCER_RUNE_BLOCK);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "infinity_rune_block"), INFINITY_RUNE_BLOCK);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "black_portal"), BLACK_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "blue_portal"), BLUE_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "brown_portal"), BROWN_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "cyan_portal"), CYAN_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "gray_portal"), GRAY_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "green_portal"), GREEN_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_blue_portal"), LIGHT_BLUE_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_gray_portal"), LIGHT_GRAY_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "lime_portal"), LIME_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "magenta_portal"), MAGENTA_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "orange_portal"), ORANGE_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "pink_portal"), PINK_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "purple_portal"), PURPLE_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "red_portal"), RED_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "white_portal"), WHITE_PORTAL);
+                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "yellow_portal"), YELLOW_PORTAL);
                 PORTAL_BLOCK_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, "customportals:portal_block_entity", FabricBlockEntityTypeBuilder.create(
                         PortalBlockEntity::new, BLACK_PORTAL, BLUE_PORTAL, BROWN_PORTAL, CYAN_PORTAL, GRAY_PORTAL, GREEN_PORTAL, LIGHT_BLUE_PORTAL, 
                         LIGHT_GRAY_PORTAL, LIME_PORTAL, MAGENTA_PORTAL, ORANGE_PORTAL, PINK_PORTAL, PURPLE_PORTAL, RED_PORTAL, WHITE_PORTAL, YELLOW_PORTAL).build(null));
