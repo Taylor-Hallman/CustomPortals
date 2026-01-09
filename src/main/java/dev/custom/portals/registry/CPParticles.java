@@ -7,16 +7,15 @@ import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.PortalParticle;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.RandomSource;
 
 public class CPParticles {
 
@@ -37,21 +36,21 @@ public class CPParticles {
     public static final SimpleParticleType YELLOW_PORTAL_PARTICLE = FabricParticleTypes.simple();
 
     public static void registerParticles() {
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "black_portal_particle"), BLACK_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "blue_portal_particle"), BLUE_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "brown_portal_particle"), BROWN_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "cyan_portal_particle"), CYAN_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "gray_portal_particle"), GRAY_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "green_portal_particle"), GREEN_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "light_blue_portal_particle"), LIGHT_BLUE_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "light_gray_portal_particle"), LIGHT_GRAY_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "lime_portal_particle"), LIME_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "magenta_portal_particle"), MAGENTA_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "orange_portal_particle"), ORANGE_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "pink_portal_particle"), PINK_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "red_portal_particle"), RED_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "white_portal_particle"), WHITE_PORTAL_PARTICLE);
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of(CustomPortals.MOD_ID, "yellow_portal_particle"), YELLOW_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "black_portal_particle"), BLACK_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "blue_portal_particle"), BLUE_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "brown_portal_particle"), BROWN_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "cyan_portal_particle"), CYAN_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "gray_portal_particle"), GRAY_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "green_portal_particle"), GREEN_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_blue_portal_particle"), LIGHT_BLUE_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_gray_portal_particle"), LIGHT_GRAY_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "lime_portal_particle"), LIME_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "magenta_portal_particle"), MAGENTA_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "orange_portal_particle"), ORANGE_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "pink_portal_particle"), PINK_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "red_portal_particle"), RED_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "white_portal_particle"), WHITE_PORTAL_PARTICLE);
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "yellow_portal_particle"), YELLOW_PORTAL_PARTICLE);
     }
 
     @Environment(EnvType.CLIENT)
@@ -76,13 +75,13 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class BlackPortalParticle extends PortalParticle {
 
-            protected BlackPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+            protected BlackPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
                     super(clientWorld, d, e, f, g, h, i, sprite);
-                    this.red = this.green = this.blue = 0.0F;
+                    this.rCol = this.gCol = this.bCol = 0.0F;
             }
 
             @Environment(EnvType.CLIENT)
-            public static class Factory implements ParticleFactory<SimpleParticleType> {
+            public static class Factory implements ParticleProvider<SimpleParticleType> {
                     private final FabricSpriteProvider spriteProvider;
 
                     public Factory(FabricSpriteProvider sprites) {
@@ -90,8 +89,8 @@ public class CPParticles {
                     }
 
                     @Override
-                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
-                            return new BlackPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                            return new BlackPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
                     }
             }
     }
@@ -99,16 +98,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class BluePortalParticle extends PortalParticle {
 
-            protected BluePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+            protected BluePortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
                     super(clientWorld, d, e, f, g, h, i, sprite);
                     float j = this.random.nextFloat() * 0.6F + 0.4F;
-                    this.red = 0.2F * j;
-                    this.green = 0.2F * j;
-                    this.blue = 1.0F * j;
+                    this.rCol = 0.2F * j;
+                    this.gCol = 0.2F * j;
+                    this.bCol = 1.0F * j;
             }
 
             @Environment(EnvType.CLIENT)
-            public static class Factory implements ParticleFactory<SimpleParticleType> {
+            public static class Factory implements ParticleProvider<SimpleParticleType> {
                     private final FabricSpriteProvider spriteProvider;
 
                     public Factory(FabricSpriteProvider sprites) {
@@ -116,8 +115,8 @@ public class CPParticles {
                     }
 
                     @Override
-                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
-                            return new BluePortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                            return new BluePortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
                     }
             }
     }
@@ -125,16 +124,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class BrownPortalParticle extends PortalParticle {
 
-            protected BrownPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+            protected BrownPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
                     super(clientWorld, d, e, f, g, h, i, sprite);
                     float j = this.random.nextFloat() * 0.6F + 0.4F;
-                    this.red = 0.575F * j;
-                    this.green = 0.45F * j;
-                    this.blue = 0.325F * j;
+                    this.rCol = 0.575F * j;
+                    this.gCol = 0.45F * j;
+                    this.bCol = 0.325F * j;
             }
 
             @Environment(EnvType.CLIENT)
-            public static class Factory implements ParticleFactory<SimpleParticleType> {
+            public static class Factory implements ParticleProvider<SimpleParticleType> {
                     private final FabricSpriteProvider spriteProvider;
 
                     public Factory(FabricSpriteProvider sprites) {
@@ -142,8 +141,8 @@ public class CPParticles {
                     }
 
                     @Override
-                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
-                            return new BrownPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                            return new BrownPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
                     }
             }
     }
@@ -151,16 +150,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class CyanPortalParticle extends PortalParticle {
 
-            protected CyanPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+            protected CyanPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
                     super(clientWorld, d, e, f, g, h, i, sprite);
                     float j = this.random.nextFloat() * 0.6F + 0.4F;
-                    this.blue = 0.8F * j;
-                    this.red = 0.2F * j;
-                    this.green = 0.65F * j;
+                    this.bCol = 0.8F * j;
+                    this.rCol = 0.2F * j;
+                    this.gCol = 0.65F * j;
             }
 
             @Environment(EnvType.CLIENT)
-            public static class Factory implements ParticleFactory<SimpleParticleType> {
+            public static class Factory implements ParticleProvider<SimpleParticleType> {
                     private final FabricSpriteProvider spriteProvider;
 
                     public Factory(FabricSpriteProvider sprites) {
@@ -168,8 +167,8 @@ public class CPParticles {
                     }
 
                     @Override
-                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
-                            return new CyanPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                            return new CyanPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
                     }
             }
     }
@@ -177,14 +176,14 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class GrayPortalParticle extends PortalParticle {
 
-            protected GrayPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+            protected GrayPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
                     super(clientWorld, d, e, f, g, h, i, sprite);
                     float j = this.random.nextFloat() * 0.6F + 0.4F;
-                    this.red = this.green = this.blue = 0.5F * j;
+                    this.rCol = this.gCol = this.bCol = 0.5F * j;
             }
 
             @Environment(EnvType.CLIENT)
-            public static class Factory implements ParticleFactory<SimpleParticleType> {
+            public static class Factory implements ParticleProvider<SimpleParticleType> {
                     private final FabricSpriteProvider spriteProvider;
 
                     public Factory(FabricSpriteProvider sprites) {
@@ -192,8 +191,8 @@ public class CPParticles {
                     }
 
                     @Override
-                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
-                            return new GrayPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+                    public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                            return new GrayPortalParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
                     }
             }
     }
@@ -201,16 +200,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class GreenPortalParticle extends PortalParticle {
 
-        protected GreenPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected GreenPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 0.2F * j;
-            this.green = 0.5F * j;
-            this.blue = 0.2F * j;
+            this.rCol = 0.2F * j;
+            this.gCol = 0.5F * j;
+            this.bCol = 0.2F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -218,8 +217,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new GreenPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new GreenPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -227,16 +226,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class LightBluePortalParticle extends PortalParticle {
 
-        protected LightBluePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected LightBluePortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 0.6F * j;
-            this.blue = 1.0F * j;
-            this.green = 0.7F * j;
+            this.rCol = 0.6F * j;
+            this.bCol = 1.0F * j;
+            this.gCol = 0.7F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -244,8 +243,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new LightBluePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new LightBluePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -253,14 +252,14 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class LightGrayPortalParticle extends PortalParticle {
 
-        protected LightGrayPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected LightGrayPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = this.green = this.blue = 0.7F * j;
+            this.rCol = this.gCol = this.bCol = 0.7F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -268,8 +267,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new LightGrayPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new LightGrayPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -277,16 +276,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class LimePortalParticle extends PortalParticle {
 
-        protected LimePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected LimePortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 0.5F * j;
-            this.green = 1.0F * j;
-            this.blue = 0.3F * j;
+            this.rCol = 0.5F * j;
+            this.gCol = 1.0F * j;
+            this.bCol = 0.3F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -294,8 +293,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new LimePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new LimePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -303,16 +302,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class MagentaPortalParticle extends PortalParticle {
 
-        protected MagentaPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected MagentaPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 1.0F * j;
-            this.green = 0.4F * j;
-            this.blue = 1.0F * j;
+            this.rCol = 1.0F * j;
+            this.gCol = 0.4F * j;
+            this.bCol = 1.0F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -320,8 +319,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new MagentaPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new MagentaPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -329,16 +328,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class OrangePortalParticle extends PortalParticle {
 
-        protected OrangePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected OrangePortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 1.0F * j;
-            this.green = 0.7F * j;
-            this.blue = 0.2F * j;
+            this.rCol = 1.0F * j;
+            this.gCol = 0.7F * j;
+            this.bCol = 0.2F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -346,8 +345,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new OrangePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new OrangePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -355,16 +354,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class PinkPortalParticle extends PortalParticle {
 
-        protected PinkPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected PinkPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 1.0F * j;
-            this.green = 0.6F * j;
-            this.blue = 0.9F * j;
+            this.rCol = 1.0F * j;
+            this.gCol = 0.6F * j;
+            this.bCol = 0.9F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -372,8 +371,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new PinkPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new PinkPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -381,16 +380,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class RedPortalParticle extends PortalParticle {
 
-        protected RedPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected RedPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 1.0F * j;
-            this.green = 0.2F * j;
-            this.blue = 0.2F * j;
+            this.rCol = 1.0F * j;
+            this.gCol = 0.2F * j;
+            this.bCol = 0.2F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -398,8 +397,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new RedPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new RedPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -407,14 +406,14 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class WhitePortalParticle extends PortalParticle {
 
-        protected WhitePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected WhitePortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = this.green = this.blue = 1.0F * j;
+            this.rCol = this.gCol = this.bCol = 1.0F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -422,8 +421,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new WhitePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new WhitePortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }
@@ -431,16 +430,16 @@ public class CPParticles {
     @Environment(EnvType.CLIENT)
     static class YellowPortalParticle extends PortalParticle {
 
-        protected YellowPortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        protected YellowPortalParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
             super(clientWorld, d, e, f, g, h, i, sprite);
             float j = this.random.nextFloat() * 0.6F + 0.4F;
-            this.red = 1.0F * j;
-            this.green = 1.0F * j;
-            this.blue = 0.2F * j;
+            this.rCol = 1.0F * j;
+            this.gCol = 1.0F * j;
+            this.bCol = 0.2F * j;
         }
 
         @Environment(EnvType.CLIENT)
-        public static class Factory implements ParticleFactory<SimpleParticleType> {
+        public static class Factory implements ParticleProvider<SimpleParticleType> {
             private final FabricSpriteProvider spriteProvider;
 
             public Factory(FabricSpriteProvider sprites) {
@@ -448,8 +447,8 @@ public class CPParticles {
             }
 
             @Override
-            public Particle createParticle(SimpleParticleType type, ClientWorld world, double d, double e, double f, double g, double h, double i, Random random) {
-                return new YellowPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
+            public Particle createParticle(SimpleParticleType type, ClientLevel world, double d, double e, double f, double g, double h, double i, RandomSource random) {
+                return new YellowPortalParticle(world, d, e, f, g, h, i, this.spriteProvider.get(random));
             }
         }
     }

@@ -2,7 +2,7 @@ package dev.custom.portals.data;
 
 import org.ladysnake.cca.api.v3.component.ComponentV3;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public interface BasePortalComponent extends ComponentV3 {
     PortalRegistry getPortalRegistry();

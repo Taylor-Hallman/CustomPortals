@@ -1,14 +1,14 @@
 package dev.custom.portals.items;
 import dev.custom.portals.util.PortalHelper;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
@@ -16,32 +16,32 @@ public class PortalCatalyst extends Item {
 
     private Block portalBlock;
 
-    public PortalCatalyst(net.minecraft.item.Item.Settings settings, Block portal) {
+    public PortalCatalyst(net.minecraft.world.item.Item.Properties settings, Block portal) {
         super(settings);
         this.portalBlock = portal;
     }
     
     @Override
-    public ActionResult useOnBlock(ItemUsageContext ctx) {
-        PlayerEntity playerEntity = ctx.getPlayer();
-        World world = ctx.getWorld();
-        BlockPos pos = new BlockPos(ctx.getBlockPos());
-        Direction dir = ctx.getSide();
+    public InteractionResult useOn(UseOnContext ctx) {
+        Player playerEntity = ctx.getPlayer();
+        Level world = ctx.getLevel();
+        BlockPos pos = new BlockPos(ctx.getClickedPos());
+        Direction dir = ctx.getClickedFace();
         pos = switch (dir) {
             case NORTH -> pos.north();
             case SOUTH -> pos.south();
             case EAST -> pos.east();
             case WEST -> pos.west();
-            case UP -> pos.up();
-            case DOWN -> pos.down();
+            case UP -> pos.above();
+            case DOWN -> pos.below();
         };
-        if (PortalHelper.buildPortal(pos, portalBlock, playerEntity.getUuid(), world)) {
+        if (PortalHelper.buildPortal(pos, portalBlock, playerEntity.getUUID(), world)) {
             if (playerEntity != null) {
-                playerEntity.playSound(SoundEvents.ITEM_FLINTANDSTEEL_USE, 1.0F, 1.0F);
+                playerEntity.playSound(SoundEvents.FLINTANDSTEEL_USE, 1.0F, 1.0F);
             }
-            ctx.getStack().decrement(1);
-            return ActionResult.SUCCESS;
+            ctx.getItemInHand().shrink(1);
+            return InteractionResult.SUCCESS;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 }

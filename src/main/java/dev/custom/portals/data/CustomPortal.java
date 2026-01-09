@@ -6,10 +6,10 @@ import java.util.UUID;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.custom.portals.config.CPSettings;
-import net.minecraft.block.MapColor;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 
 public class CustomPortal {
 
@@ -97,7 +97,7 @@ public class CustomPortal {
                         int weakEnhancerRunes, int strongEnhancerRunes, int infinityRunes) {
         this.frameId = frameId;
         this.dimensionId = dimensionId;
-        this.color = MapColor.get(colorId);
+        this.color = MapColor.byId(colorId);
         this.spawnPos = spawnPos;
         this.portalBlocks = portalBlocks;
         this.offsetX = offsetX;
