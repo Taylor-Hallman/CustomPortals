@@ -1,5 +1,6 @@
 package dev.custom.portals.blocks;
 
+import dev.custom.portals.config.CPSettings;
 import net.minecraft.block.*;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.text.*;
@@ -222,7 +223,7 @@ public class PortalBlock extends Block implements BlockEntityProvider, Waterlogg
    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
       if (!(Boolean)state.get(LIT))
          return;
-      if (random.nextInt(100) == 0) {
+      if (!CPSettings.instance().muteAmbientSounds && random.nextInt(100) == 0) {
          world.playSound((double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5F, random.nextFloat() * 0.4F + 0.8F, false);
       }
       for(int i = 0; i < 4; ++i) {

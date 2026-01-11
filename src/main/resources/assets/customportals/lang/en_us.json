@@ -49,6 +49,8 @@
     "yacl3.config.customportals:config.category.range_settings": "Portal Range",
     "yacl3.config.customportals:config.unlimitedRange": "Portals Always Have Unlimited Range",
     "yacl3.config.customportals:config.privatePortals": "Private Portals",
+    "yacl3.config.customportals:config.muteAmbientSounds": "Mute Ambient Portal Sound Effects",
+    "yacl3.config.customportals:config.muteTeleportSounds": "Mute Player Teleport Sound Effects",
     "yacl3.config.customportals:config.defaultRange": "Default Portal Range (In Blocks)",
     "yacl3.config.customportals:config.rangeWithEnhancer": "Portal Range With Enhancer Rune",
     "yacl3.config.customportals:config.rangeWithStrongEnhancer": "Portal Range With Strong Enhancer Rune",

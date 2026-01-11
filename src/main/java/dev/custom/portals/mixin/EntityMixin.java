@@ -156,7 +156,8 @@ public abstract class EntityMixin implements EntityMixinAccess {
                             for (StatusEffectInstance statusEffectInstance : thisPlayer.getStatusEffects()) {
                                 thisPlayer.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(((ServerPlayerEntity) (Object) this).getId(), statusEffectInstance));
                             }
-                            thisPlayer.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
+                            if (!CPSettings.instance().muteTeleportSounds)
+                                thisPlayer.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
                             playerManager.sendCommandTree(thisPlayer);
                         }
                         else this.teleport(serverWorld, destX, destY, destZ, Collections.emptySet(), this.yaw, this.pitch);

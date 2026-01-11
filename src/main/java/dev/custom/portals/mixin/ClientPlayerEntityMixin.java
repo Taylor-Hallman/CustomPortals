@@ -1,5 +1,6 @@
 package dev.custom.portals.mixin;
 
+import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.Portal;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
@@ -50,7 +51,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
                 this.client.setScreen((Screen)null);
             }
 
-            if (this.nauseaIntensity == 0.0F && ((EntityMixinAccess)this).getMaxCustomPortalTime() > 1) {
+            if (!CPSettings.instance().muteTeleportSounds && this.nauseaIntensity == 0.0F && ((EntityMixinAccess)this).getMaxCustomPortalTime() > 1) {
                 this.client.getSoundManager().play(PositionedSoundInstance.ambient(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4F + 0.8F, 0.25F));
             }
 
