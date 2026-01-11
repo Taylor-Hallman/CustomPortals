@@ -1,6 +1,7 @@
 package dev.custom.portals.mixin;
 
 import com.mojang.authlib.GameProfile;
+import dev.custom.portals.config.CPSettings;
 import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
 import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
@@ -97,8 +98,8 @@ public abstract class ServerPlayerMixin extends Player {
             playerManager.sendLevelInfo(thisPlayer, serverWorld);
             playerManager.sendAllPlayerInfo(thisPlayer);
             playerManager.sendActivePlayerEffects(thisPlayer);
-            // Apparently this line means "play the teleport sound effect." Minecraft try to have readable code challenge (impossible)
-            this.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
+            if (!CPSettings.instance().muteTeleportSounds)
+                this.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
             this.lastSentExp = -1;
             this.lastSentHealth = -1.0F;
             this.lastSentFood = -1;

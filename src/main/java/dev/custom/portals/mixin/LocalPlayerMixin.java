@@ -1,5 +1,6 @@
 package dev.custom.portals.mixin;
 
+import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.CustomPortal;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -51,7 +52,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
                 this.minecraft.setScreen((Screen)null);
             }
 
-            if (this.portalEffectIntensity == 0.0F && portal.getPlayerTeleportDelay() > 1) {
+            if (!CPSettings.instance().muteTeleportSounds && this.portalEffectIntensity == 0.0F && portal.getPlayerTeleportDelay() > 1) {
                 this.minecraft.getSoundManager().play(SimpleSoundInstance.forLocalAmbience(SoundEvents.PORTAL_TRIGGER, this.random.nextFloat() * 0.4F + 0.8F, 0.25F));
             }
 

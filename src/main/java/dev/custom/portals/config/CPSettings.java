@@ -68,6 +68,14 @@ public final class CPSettings {
     })
     @SerialEntry(comment = "Note: Setting this to 'Turns Portals On' means your portals will be off without redstone power!")
     public RedstoneEnum redstone = RedstoneEnum.OFF;
+    @AutoGen(category = "general")
+    @Boolean
+    @SerialEntry
+    public boolean muteAmbientSounds = false;
+    @AutoGen(category = "general")
+    @Boolean
+    @SerialEntry
+    public boolean muteTeleportSounds = false;
     @AutoGen(category = "range_settings")
     @IntField(min = 0, max = Integer.MAX_VALUE)
     @SerialEntry
