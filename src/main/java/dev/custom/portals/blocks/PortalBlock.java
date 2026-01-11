@@ -245,7 +245,7 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
       if (!(Boolean)state.getValue(LIT))
          return;
-      if (random.nextInt(100) == 0) {
+      if (!CPSettings.instance().muteAmbientSounds && random.nextInt(100) == 0) {
          world.playLocalSound((double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 0.5F, random.nextFloat() * 0.4F + 0.8F, false);
       }
       for(int i = 0; i < 4; ++i) {

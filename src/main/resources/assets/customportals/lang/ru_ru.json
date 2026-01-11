@@ -54,6 +54,8 @@
     "yacl3.config.customportals:config.category.range_settings": "Радиус портала",
     "yacl3.config.customportals:config.unlimitedRange": "Безлимитный радиус портала",
     "yacl3.config.customportals:config.privateпорталs": "Приватный портал",
+    "yacl3.config.customportals:config.muteAmbientSounds": "Отключить звуковые эффекты окружающего пространства портала",
+    "yacl3.config.customportals:config.muteTeleportSounds": "Отключить звуковые эффекты телепортации игрока",
     "yacl3.config.customportals:config.defaultRange": "Обычный радиус портала (В блоках)",
     "yacl3.config.customportals:config.rangeWithEnhancer": "Радиус действия портала с усиливающей руной",
     "yacl3.config.customportals:config.rangeWithStrongEnhancer": "Радиус действия портала с мощной усиливающей руной",
