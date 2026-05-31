@@ -60,8 +60,8 @@
     "yacl3.config.customportals:config.rangeWithEnhancer": "Радиус действия портала с усиливающей руной",
     "yacl3.config.customportals:config.rangeWithStrongEnhancer": "Радиус действия портала с мощной усиливающей руной",
     "yacl3.config.customportals:config.category.block_filter_settings": "Портальные рамки",
-    "yacl3.config.customportals:config.isБелыйlist": "Белый список или чёрный список",
-    "yacl3.config.customportals:config.isБелыйlist.fmt.false": "Чёрный список",
-    "yacl3.config.customportals:config.isБелыйlist.fmt.true": "Белый список",
+    "yacl3.config.customportals:config.isWhitelist": "Белый список или чёрный список",
+    "yacl3.config.customportals:config.isWhitelist.fmt.false": "Чёрный список",
+    "yacl3.config.customportals:config.isWhitelist.fmt.true": "Белый список",
     "yacl3.config.customportals:config.filteredBlocks": "Отфильтрованные блоки"
 }
