@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
@@ -115,8 +115,8 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
                pos = pos.below();
             }
   
-            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityType.ZOMBIFIED_PIGLIN)) {
-               Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
+            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityTypes.ZOMBIFIED_PIGLIN)) {
+               Entity entity = EntityTypes.ZOMBIFIED_PIGLIN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
                if (entity != null) {
                   entity.setPortalCooldown();
                }
@@ -127,8 +127,8 @@ public class PortalBlock extends Block implements EntityBlock, SimpleWaterlogged
                pos = pos.below();
             }
   
-            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityType.ENDERMAN)) {
-               Entity entity = EntityType.ENDERMAN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
+            if (serverLevel.getBlockState(pos).isValidSpawn(serverLevel, pos, EntityTypes.ENDERMAN)) {
+               Entity entity = EntityTypes.ENDERMAN.spawn(serverLevel, pos.above(), EntitySpawnReason.STRUCTURE);
                if (entity != null) {
                   entity.setPortalCooldown();
                }

@@ -13,7 +13,7 @@ import dev.custom.portals.util.EntityMixinAccess;
 
 import org.spongepowered.asm.mixin.Final;
 
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.sprite.SpriteId;
@@ -22,7 +22,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.level.block.Block;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class GuiMixin {
 
     @Final
