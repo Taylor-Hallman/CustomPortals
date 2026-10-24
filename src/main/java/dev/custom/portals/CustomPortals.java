@@ -1,68 +1,46 @@
 package dev.custom.portals;
 
-import dev.custom.portals.config.CPSettings;
-import dev.custom.portals.data.BasePortalComponent;
-import dev.custom.portals.data.WorldPortals;
+import dev.custom.portals.config.CPConfig;
+import dev.custom.portals.data.PortalData;
+import dev.custom.portals.network.CPNetwork;
 import dev.custom.portals.registry.CPBlocks;
+import dev.custom.portals.registry.CPCreativeTabs;
 import dev.custom.portals.registry.CPItems;
 import dev.custom.portals.registry.CPParticles;
-import dev.custom.portals.util.DrawSpritePayload;
-import dev.custom.portals.util.EntityMixinAccess;
-import dev.custom.portals.util.ScreenTransitionPayload;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import org.ladysnake.cca.api.v8.level.LevelComponentFactoryRegistry;
-import org.ladysnake.cca.api.v8.level.LevelComponentInitializer;
-import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-public class CustomPortals implements ModInitializer, LevelComponentInitializer {
+@Mod(CustomPortals.MOD_ID)
+public class CustomPortals {
 
-        public static final String MOD_ID = "customportals";
+    public static final String MOD_ID = "customportals";
 
-        public static final ComponentKey<BasePortalComponent> PORTALS = ComponentRegistryV3.INSTANCE
-                .getOrCreate(Identifier.parse("customportals:portals"), BasePortalComponent.class);
+    public CustomPortals(IEventBus modBus, ModContainer container) {
+        CPBlocks.BLOCKS.register(modBus);
+        CPBlocks.BLOCK_ENTITY_TYPES.register(modBus);
+        CPItems.ITEMS.register(modBus);
+        CPParticles.PARTICLE_TYPES.register(modBus);
+        CPCreativeTabs.CREATIVE_MODE_TABS.register(modBus);
+        modBus.addListener(CPNetwork::registerPayloads);
+        container.registerConfig(ModConfig.Type.COMMON, CPConfig.SPEC);
+        NeoForge.EVENT_BUS.addListener(CustomPortals::onPlayerLoggedIn);
+    }
 
-        public static final ResourceKey<CreativeModeTab> PORTALS_ITEM_GROUP = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
-                Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "general"));
-
-        @Override
-        public void onInitialize() {
-                Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, PORTALS_ITEM_GROUP, FabricCreativeModeTab.builder().icon(()
-                        -> new ItemStack(CPItems.PURPLE_PORTAL_CATALYST))
-                        .title(Component.translatable("itemGroup.customportals.general")).build());
-                CPSettings.load();
-                CPBlocks.registerBlocks();
-                CPItems.registerItems();
-                CPParticles.registerParticles();
-                PayloadTypeRegistry.clientboundPlay().register(DrawSpritePayload.ID, DrawSpritePayload.CODEC);
-                PayloadTypeRegistry.serverboundPlay().register(ScreenTransitionPayload.ID, ScreenTransitionPayload.CODEC);
-                ServerPlayNetworking.registerGlobalReceiver(ScreenTransitionPayload.ID, (payload, context) -> {
-                        context.server().execute(() -> {
-                                ((EntityMixinAccess)context.player()).setInTransition(payload.isTransitioning());
-                        });
-                });
+    /** New players need the full registry before they can see portal overlays or predict portal behavior. */
+    private static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            PortalData.syncTo(player);
         }
+    }
 
-        @Override
-        public void registerLevelComponentFactories(LevelComponentFactoryRegistry registry) {
-                registry.register(PORTALS, WorldPortals.class, WorldPortals::new);
-        }
-
-        // for debugging purposes
-        public static String blockPosToString(BlockPos pos) {
-                return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
-        }
-
+    // for debugging purposes
+    public static String blockPosToString(BlockPos pos) {
+        return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
+    }
 }

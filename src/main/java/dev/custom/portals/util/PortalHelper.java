@@ -1,28 +1,28 @@
 package dev.custom.portals.util;
 
-import dev.custom.portals.CustomPortals;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+import java.util.UUID;
+
 import dev.custom.portals.blocks.AbstractRuneBlock;
 import dev.custom.portals.config.CPSettings;
 import dev.custom.portals.data.CustomPortal;
+import dev.custom.portals.data.PortalData;
 import dev.custom.portals.registry.CPBlocks;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
-
-import java.util.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PortalHelper {
-
-    public static final Identifier DRAW_SPRITE_PACKET_ID = Identifier.fromNamespaceAndPath("customportals", "draw_sprite");
-    public static final Identifier SCREEN_TRANSITION_PACKET_ID = Identifier.fromNamespaceAndPath("customportals", "is_in_transition");
 
     private static BlockPos getUp(BlockPos pos, Direction.Axis axis) {
         return axis == Direction.Axis.Y ? pos.north() : pos.above();
@@ -87,11 +87,6 @@ public class PortalHelper {
         for (BlockPos blockPos : midPortalBlocks) {
             if (getTranslatedY(blockPos, axis) < getTranslatedY(bottom, axis)) bottom = blockPos;
         }
-        // TODO algorithm that ensures a default spawn position that the player can fit in is always selected if available
-        /*if (!world.getBlockState(getUp(bottom, axis)).isOf(portalBlock)
-                && !world.getBlockState(getDown(bottom, axis)).isOf(portalBlock)) {
-            BlockPos leftBottom = getLeft(bottom, axis);
-        }*/
         int ySpawn = getTranslatedY(bottom, axis);
         int height = 1; // unused unless portal is oriented along Y axis
         if (axis == Direction.Axis.Y) {
@@ -122,7 +117,6 @@ public class PortalHelper {
             }
         }
         BlockPos spawnPos = new BlockPos(new Vec3i(trueXSpawn, trueYSpawn, trueZSpawn));
-        //System.out.println(CustomPortals.blockPosToString(spawnPos));
         return new SpawnPosData(spawnPos, offsetX, offsetZ);
     }
 
@@ -164,8 +158,8 @@ public class PortalHelper {
 
         // verify that the frame block is a valid portal frame block
         String frameId = BuiltInRegistries.BLOCK.getKey(frameMaterial).toString();
-        List<String> blockIds = CPSettings.instance().filteredBlocks;
-        if (CPSettings.instance().isWhitelist) {
+        List<? extends String> blockIds = CPSettings.filteredBlocks();
+        if (CPSettings.isWhitelist()) {
             if (!blockIds.contains(frameId)) return false;
         } else {
             if (blockIds.contains(frameId)) return false;
@@ -209,49 +203,48 @@ public class PortalHelper {
             world.setBlockAndUpdate(pos, portalState);
         }
 
-        SpawnPosData spawnPosData = determineSpawnPos(portalBlocks, portalBlock, axis, world);
+        // the registry is server-authoritative; clients receive the new portal through the sync payload
+        if (!world.isClientSide()) {
+            SpawnPosData spawnPosData = determineSpawnPos(portalBlocks, portalBlock, axis, world);
 
-        CustomPortal portal = new CustomPortal(frameId, world.dimension().identifier().toString(),
-                portalBlock.defaultMapColor(), spawnPosData.blockPos, portalBlocks, spawnPosData.offsetX,
-                spawnPosData.offsetZ, creatorId);
-        CustomPortals.PORTALS.maybeGet(world).ifPresent(component -> {
-            component.registerPortal(portal);
-            if (!world.isClientSide()) {
-                component.syncWithAll(((ServerLevel) world).getServer());
-            }
-        });
+            CustomPortal portal = new CustomPortal(frameId, world.dimension().identifier().toString(),
+                    portalBlock.defaultMapColor(), spawnPosData.blockPos, portalBlocks, spawnPosData.offsetX,
+                    spawnPosData.offsetZ, creatorId);
+            PortalData.get(world).register(portal);
 
-        // register any runes that were already on the portal frames
-        for (BlockPos framePos : frames) {
-            List<BlockPos> frameAdjacents = getAdjacents(framePos);
-            for (BlockPos adj : frameAdjacents) {
-                Block block = world.getBlockState(adj).getBlock();
-                if (block instanceof AbstractRuneBlock)
-                    if (((AbstractRuneBlock)block).getBlockMountedPos(adj, world.getBlockState(adj)).equals(framePos))
-                        ((AbstractRuneBlock)block).registerOnPortal(portal, world);
+            // register any runes that were already on the portal frames; sync once after all of them are applied
+            for (BlockPos framePos : frames) {
+                List<BlockPos> frameAdjacents = getAdjacents(framePos);
+                for (BlockPos adj : frameAdjacents) {
+                    Block block = world.getBlockState(adj).getBlock();
+                    if (block instanceof AbstractRuneBlock)
+                        if (((AbstractRuneBlock)block).getBlockMountedPos(adj, world.getBlockState(adj)).equals(framePos))
+                            ((AbstractRuneBlock)block).attachWithoutSync(portal, world);
+                }
             }
+            PortalData.markChanged(world);
         }
         return true;
     }
 
     public static Block getPortalBlockFromColorId(int colorId) {
         return switch (colorId) {
-            case 29 -> CPBlocks.BLACK_PORTAL;
-            case 25 -> CPBlocks.BLUE_PORTAL;
-            case 26 -> CPBlocks.BROWN_PORTAL;
-            case 23 -> CPBlocks.CYAN_PORTAL;
-            case 21 -> CPBlocks.GRAY_PORTAL;
-            case 27 -> CPBlocks.GREEN_PORTAL;
-            case 17 -> CPBlocks.LIGHT_BLUE_PORTAL;
-            case 22 -> CPBlocks.LIGHT_GRAY_PORTAL;
-            case 19 -> CPBlocks.LIME_PORTAL;
-            case 16 -> CPBlocks.MAGENTA_PORTAL;
-            case 15 -> CPBlocks.ORANGE_PORTAL;
-            case 20 -> CPBlocks.PINK_PORTAL;
-            case 24 -> CPBlocks.PURPLE_PORTAL;
-            case 28 -> CPBlocks.RED_PORTAL;
-            case 8 -> CPBlocks.WHITE_PORTAL;
-            case 18 -> CPBlocks.YELLOW_PORTAL;
+            case 29 -> CPBlocks.BLACK_PORTAL.get();
+            case 25 -> CPBlocks.BLUE_PORTAL.get();
+            case 26 -> CPBlocks.BROWN_PORTAL.get();
+            case 23 -> CPBlocks.CYAN_PORTAL.get();
+            case 21 -> CPBlocks.GRAY_PORTAL.get();
+            case 27 -> CPBlocks.GREEN_PORTAL.get();
+            case 17 -> CPBlocks.LIGHT_BLUE_PORTAL.get();
+            case 22 -> CPBlocks.LIGHT_GRAY_PORTAL.get();
+            case 19 -> CPBlocks.LIME_PORTAL.get();
+            case 16 -> CPBlocks.MAGENTA_PORTAL.get();
+            case 15 -> CPBlocks.ORANGE_PORTAL.get();
+            case 20 -> CPBlocks.PINK_PORTAL.get();
+            case 24 -> CPBlocks.PURPLE_PORTAL.get();
+            case 28 -> CPBlocks.RED_PORTAL.get();
+            case 8 -> CPBlocks.WHITE_PORTAL.get();
+            case 18 -> CPBlocks.YELLOW_PORTAL.get();
             default -> Blocks.NETHER_PORTAL;
         };
     }

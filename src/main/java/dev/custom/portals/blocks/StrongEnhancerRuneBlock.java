@@ -1,11 +1,11 @@
 package dev.custom.portals.blocks;
 
 import com.mojang.serialization.MapCodec;
-import dev.custom.portals.CustomPortals;
 import dev.custom.portals.data.CustomPortal;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.server.level.ServerLevel;
+import dev.custom.portals.data.PortalData;
+import dev.custom.portals.data.PortalRegistry;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class StrongEnhancerRuneBlock extends AbstractRuneBlock {
 
@@ -21,20 +21,17 @@ public class StrongEnhancerRuneBlock extends AbstractRuneBlock {
     }
 
     @Override
-    public void registerOnPortal(CustomPortal portal, Level world) {
+    protected void applyTo(CustomPortal portal, Level world) {
         portal.addStrongEnhancer();
-        CustomPortals.PORTALS.get(world).tryWithAll(portal);
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
+        PortalData.get(world).tryWithAll(portal);
     }
-    
+
     @Override
-    public void unregisterOnPortal(CustomPortal portal, Level world) {
+    protected void removeFrom(CustomPortal portal, Level world) {
         portal.removeStrongEnhancer();
+        PortalRegistry registry = PortalData.get(world);
         if (portal.hasLinked())
-            CustomPortals.PORTALS.get(world).tryWithAll(portal.getLinked());
-        CustomPortals.PORTALS.get(world).tryWithAll(portal);
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
+            registry.tryWithAll(portal.getLinked());
+        registry.tryWithAll(portal);
     }
 }

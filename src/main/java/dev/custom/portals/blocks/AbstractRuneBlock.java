@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.MapCodec;
-import dev.custom.portals.CustomPortals;
+import dev.custom.portals.data.PortalData;
 import dev.custom.portals.data.CustomPortal;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
@@ -43,9 +43,31 @@ public class AbstractRuneBlock extends FaceAttachedHorizontalDirectionalBlock {
         this.registerDefaultState((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH)).setValue(FACE, AttachFace.WALL));
     }
 
-    public void registerOnPortal(CustomPortal portal, Level world) {}
+    /** Applies this rune's effect to the portal (counts, relinking). Does not sync; see {@link #registerOnPortal}. */
+    protected void applyTo(CustomPortal portal, Level world) {}
 
-    public void unregisterOnPortal(CustomPortal portal, Level world) {}
+    /** Reverses {@link #applyTo}. Does not sync; see {@link #unregisterOnPortal}. */
+    protected void removeFrom(CustomPortal portal, Level world) {}
+
+    /** Adds this rune to the portal and syncs the registry. */
+    public final void registerOnPortal(CustomPortal portal, Level world) {
+        if (world.isClientSide()) return;
+        applyTo(portal, world);
+        PortalData.markChanged(world);
+    }
+
+    /** Removes this rune from the portal and syncs the registry. */
+    public final void unregisterOnPortal(CustomPortal portal, Level world) {
+        if (world.isClientSide()) return;
+        removeFrom(portal, world);
+        PortalData.markChanged(world);
+    }
+
+    /** Adds this rune to the portal without syncing; the caller must call {@link PortalData#markChanged} afterwards. */
+    public final void attachWithoutSync(CustomPortal portal, Level world) {
+        if (world.isClientSide()) return;
+        applyTo(portal, world);
+    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -95,7 +117,7 @@ public class AbstractRuneBlock extends FaceAttachedHorizontalDirectionalBlock {
         adjacents.add(blockPos.north());
         adjacents.add(blockPos.above());
         for (BlockPos adjacent : adjacents) {
-            portal = CustomPortals.PORTALS.maybeGet(world).map(c -> c.getPortalFromPos(adjacent)).orElse(null);
+            portal = PortalData.getPortalFromPos(world, adjacent);
             if (portal != null) {
                 BlockState adjacentState = world.getBlockState(adjacent);
                 if ((adjacent.equals(blockPos.above()) || adjacent.equals(blockPos.below())) && adjacentState.hasProperty(BlockStateProperties.AXIS) && (Direction.Axis)adjacentState.getValue(BlockStateProperties.AXIS) != Direction.Axis.Y) {
@@ -124,7 +146,7 @@ public class AbstractRuneBlock extends FaceAttachedHorizontalDirectionalBlock {
         adjacents.add(blockPos.north());
         adjacents.add(blockPos.above());
         for (BlockPos adjacent : adjacents) {
-            portal = CustomPortals.PORTALS.maybeGet(world).map(c -> c.getPortalFromPos(adjacent)).orElse(null);
+            portal = PortalData.getPortalFromPos(world, adjacent);
             if (portal != null) {
                 BlockState adjacentState = world.getBlockState(adjacent);
                 if ((adjacent.equals(blockPos.above()) || adjacent.equals(blockPos.below())) && adjacentState.hasProperty(BlockStateProperties.AXIS) && (Direction.Axis)adjacentState.getValue(BlockStateProperties.AXIS) != Direction.Axis.Y) {

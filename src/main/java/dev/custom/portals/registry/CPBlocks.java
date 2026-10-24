@@ -3,129 +3,84 @@ package dev.custom.portals.registry;
 import java.util.function.ToIntFunction;
 
 import dev.custom.portals.CustomPortals;
-import dev.custom.portals.blocks.*;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import dev.custom.portals.blocks.EnhancerRuneBlock;
+import dev.custom.portals.blocks.GateRuneBlock;
+import dev.custom.portals.blocks.HasteRuneBlock;
+import dev.custom.portals.blocks.InfinityRuneBlock;
+import dev.custom.portals.blocks.PortalBlock;
+import dev.custom.portals.blocks.PortalBlockEntity;
+import dev.custom.portals.blocks.StrongEnhancerRuneBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.material.MapColor;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CPBlocks {
 
-        private static ResourceKey<Block> getKey(String name) {
-                Identifier id = Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, name);
-                return ResourceKey.create(Registries.BLOCK, id);
-        }
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(CustomPortals.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, CustomPortals.MOD_ID);
 
-        private static final ToIntFunction<BlockState> STATE_TO_LUMINANCE = (state) -> {
-                return (Boolean)state.getValue(BlockStateProperties.LIT) ? 11 : 0;
-        };
+    private static final ToIntFunction<BlockState> STATE_TO_LUMINANCE = state -> state.getValue(BlockStateProperties.LIT) ? 11 : 0;
+    private static final ToIntFunction<BlockState> RUNE_LUMINANCE = state -> 2;
 
-        private static final ToIntFunction<BlockState> RUNE_LUMINANCE = (state) -> {
-                return 2;
-        };
+    /** Fresh instance per block: BlockBehaviour.Properties must not be shared. */
+    private static BlockBehaviour.Properties runeProperties() {
+        return BlockBehaviour.Properties.of().sound(SoundType.AMETHYST_CLUSTER)
+                .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F);
+    }
 
-        // Runes
-        public static final Block HASTE_RUNE_BLOCK = new HasteRuneBlock(
-                Block.Properties.of().setId(getKey("haste_rune_block")).sound(SoundType.AMETHYST_CLUSTER)
-                .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F));
-        public static final Block GATE_RUNE_BLOCK = new GateRuneBlock(
-                Block.Properties.of().setId(getKey("gate_rune_block")).sound(SoundType.AMETHYST_CLUSTER)
-                  .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F));
-        public static final Block WEAK_ENHANCER_RUNE_BLOCK = new EnhancerRuneBlock(
-                Block.Properties.of().setId(getKey("weak_enhancer_rune_block")).sound(SoundType.AMETHYST_CLUSTER)
-                .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F));
-        public static final Block STRONG_ENHANCER_RUNE_BLOCK = new StrongEnhancerRuneBlock(
-                Block.Properties.of().setId(getKey("strong_enhancer_rune_block")).sound(SoundType.AMETHYST_CLUSTER)
-                .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F));
-        public static final Block INFINITY_RUNE_BLOCK = new InfinityRuneBlock(
-                Block.Properties.of().setId(getKey("infinity_rune_block")).sound(SoundType.AMETHYST_CLUSTER)
-                .noOcclusion().lightLevel(RUNE_LUMINANCE).noCollision().strength(0.3F));
+    private static BlockBehaviour.Properties portalProperties(MapColor color, boolean emitsLight) {
+        BlockBehaviour.Properties properties = BlockBehaviour.Properties.of().mapColor(color)
+                .noOcclusion().noCollision().randomTicks().strength(-1.0F).sound(SoundType.GLASS);
+        return emitsLight ? properties.lightLevel(STATE_TO_LUMINANCE) : properties;
+    }
 
-        // Portal Blocks
-        public static final Block BLACK_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("black_portal")).mapColor(MapColor.COLOR_BLACK).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS));
-        public static final Block BLUE_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("blue_portal")).mapColor(MapColor.COLOR_BLUE).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block BROWN_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("brown_portal")).mapColor(MapColor.COLOR_BROWN).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block CYAN_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("cyan_portal")).mapColor(MapColor.COLOR_CYAN).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block GRAY_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("gray_portal")).mapColor(MapColor.COLOR_GRAY).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block GREEN_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("green_portal")).mapColor(MapColor.COLOR_GREEN).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block LIGHT_BLUE_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("light_blue_portal")).mapColor(MapColor.COLOR_LIGHT_BLUE).noOcclusion().noCollision()
-                .randomTicks().strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block LIGHT_GRAY_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("light_gray_portal")).mapColor(MapColor.COLOR_LIGHT_GRAY).noOcclusion().noCollision()
-                .randomTicks().strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block LIME_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("lime_portal")).mapColor(MapColor.COLOR_LIGHT_GREEN).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block MAGENTA_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("magenta_portal")).mapColor(MapColor.COLOR_MAGENTA).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block ORANGE_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("orange_portal")).mapColor(MapColor.COLOR_ORANGE).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block PINK_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("pink_portal")).mapColor(MapColor.COLOR_PINK).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block PURPLE_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("purple_portal")).mapColor(MapColor.COLOR_PURPLE).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block RED_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("red_portal")).mapColor(MapColor.COLOR_RED).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block WHITE_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("white_portal")).mapColor(MapColor.SNOW).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
-        public static final Block YELLOW_PORTAL = new PortalBlock(
-                Block.Properties.of().setId(getKey("yellow_portal")).mapColor(MapColor.COLOR_YELLOW).noOcclusion().noCollision().randomTicks()
-                .strength(-1.0F).sound(SoundType.GLASS).lightLevel(STATE_TO_LUMINANCE));
+    // Properties are passed as Suppliers: DeferredRegister.Blocks#registerBlock calls setId on the supplied instance.
 
-        // BlockEntities
-        public static BlockEntityType<PortalBlockEntity> PORTAL_BLOCK_ENTITY;
+    // Runes
+    public static final DeferredBlock<HasteRuneBlock> HASTE_RUNE_BLOCK =
+            BLOCKS.registerBlock("haste_rune_block", HasteRuneBlock::new, CPBlocks::runeProperties);
+    public static final DeferredBlock<GateRuneBlock> GATE_RUNE_BLOCK =
+            BLOCKS.registerBlock("gate_rune_block", GateRuneBlock::new, CPBlocks::runeProperties);
+    public static final DeferredBlock<EnhancerRuneBlock> WEAK_ENHANCER_RUNE_BLOCK =
+            BLOCKS.registerBlock("weak_enhancer_rune_block", EnhancerRuneBlock::new, CPBlocks::runeProperties);
+    public static final DeferredBlock<StrongEnhancerRuneBlock> STRONG_ENHANCER_RUNE_BLOCK =
+            BLOCKS.registerBlock("strong_enhancer_rune_block", StrongEnhancerRuneBlock::new, CPBlocks::runeProperties);
+    public static final DeferredBlock<InfinityRuneBlock> INFINITY_RUNE_BLOCK =
+            BLOCKS.registerBlock("infinity_rune_block", InfinityRuneBlock::new, CPBlocks::runeProperties);
 
-        public static void registerBlocks() {
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "haste_rune_block"), HASTE_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "gate_rune_block"), GATE_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "weak_enhancer_rune_block"), WEAK_ENHANCER_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "strong_enhancer_rune_block"), STRONG_ENHANCER_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "infinity_rune_block"), INFINITY_RUNE_BLOCK);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "black_portal"), BLACK_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "blue_portal"), BLUE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "brown_portal"), BROWN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "cyan_portal"), CYAN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "gray_portal"), GRAY_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "green_portal"), GREEN_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_blue_portal"), LIGHT_BLUE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "light_gray_portal"), LIGHT_GRAY_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "lime_portal"), LIME_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "magenta_portal"), MAGENTA_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "orange_portal"), ORANGE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "pink_portal"), PINK_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "purple_portal"), PURPLE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "red_portal"), RED_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "white_portal"), WHITE_PORTAL);
-                Registry.register(BuiltInRegistries.BLOCK, Identifier.fromNamespaceAndPath(CustomPortals.MOD_ID, "yellow_portal"), YELLOW_PORTAL);
-                PORTAL_BLOCK_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, "customportals:portal_block_entity", FabricBlockEntityTypeBuilder.create(
-                        PortalBlockEntity::new, BLACK_PORTAL, BLUE_PORTAL, BROWN_PORTAL, CYAN_PORTAL, GRAY_PORTAL, GREEN_PORTAL, LIGHT_BLUE_PORTAL, 
-                        LIGHT_GRAY_PORTAL, LIME_PORTAL, MAGENTA_PORTAL, ORANGE_PORTAL, PINK_PORTAL, PURPLE_PORTAL, RED_PORTAL, WHITE_PORTAL, YELLOW_PORTAL).build(null));
-        }
+    // Portal blocks (black portals do not emit light, matching the Fabric build)
+    public static final DeferredBlock<PortalBlock> BLACK_PORTAL = BLOCKS.registerBlock("black_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_BLACK, false));
+    public static final DeferredBlock<PortalBlock> BLUE_PORTAL = BLOCKS.registerBlock("blue_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_BLUE, true));
+    public static final DeferredBlock<PortalBlock> BROWN_PORTAL = BLOCKS.registerBlock("brown_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_BROWN, true));
+    public static final DeferredBlock<PortalBlock> CYAN_PORTAL = BLOCKS.registerBlock("cyan_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_CYAN, true));
+    public static final DeferredBlock<PortalBlock> GRAY_PORTAL = BLOCKS.registerBlock("gray_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_GRAY, true));
+    public static final DeferredBlock<PortalBlock> GREEN_PORTAL = BLOCKS.registerBlock("green_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_GREEN, true));
+    public static final DeferredBlock<PortalBlock> LIGHT_BLUE_PORTAL = BLOCKS.registerBlock("light_blue_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_LIGHT_BLUE, true));
+    public static final DeferredBlock<PortalBlock> LIGHT_GRAY_PORTAL = BLOCKS.registerBlock("light_gray_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_LIGHT_GRAY, true));
+    public static final DeferredBlock<PortalBlock> LIME_PORTAL = BLOCKS.registerBlock("lime_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_LIGHT_GREEN, true));
+    public static final DeferredBlock<PortalBlock> MAGENTA_PORTAL = BLOCKS.registerBlock("magenta_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_MAGENTA, true));
+    public static final DeferredBlock<PortalBlock> ORANGE_PORTAL = BLOCKS.registerBlock("orange_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_ORANGE, true));
+    public static final DeferredBlock<PortalBlock> PINK_PORTAL = BLOCKS.registerBlock("pink_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_PINK, true));
+    public static final DeferredBlock<PortalBlock> PURPLE_PORTAL = BLOCKS.registerBlock("purple_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_PURPLE, true));
+    public static final DeferredBlock<PortalBlock> RED_PORTAL = BLOCKS.registerBlock("red_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_RED, true));
+    public static final DeferredBlock<PortalBlock> WHITE_PORTAL = BLOCKS.registerBlock("white_portal", PortalBlock::new, () -> portalProperties(MapColor.SNOW, true));
+    public static final DeferredBlock<PortalBlock> YELLOW_PORTAL = BLOCKS.registerBlock("yellow_portal", PortalBlock::new, () -> portalProperties(MapColor.COLOR_YELLOW, true));
+
+    // Block entity
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PortalBlockEntity>> PORTAL_BLOCK_ENTITY =
+            BLOCK_ENTITY_TYPES.register("portal_block_entity", () -> new BlockEntityType<>(
+                    PortalBlockEntity::new,
+                    false,
+                    BLACK_PORTAL.get(), BLUE_PORTAL.get(), BROWN_PORTAL.get(), CYAN_PORTAL.get(), GRAY_PORTAL.get(),
+                    GREEN_PORTAL.get(), LIGHT_BLUE_PORTAL.get(), LIGHT_GRAY_PORTAL.get(), LIME_PORTAL.get(),
+                    MAGENTA_PORTAL.get(), ORANGE_PORTAL.get(), PINK_PORTAL.get(), PURPLE_PORTAL.get(), RED_PORTAL.get(),
+                    WHITE_PORTAL.get(), YELLOW_PORTAL.get()));
 }

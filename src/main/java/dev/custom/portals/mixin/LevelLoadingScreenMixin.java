@@ -1,6 +1,7 @@
 package dev.custom.portals.mixin;
-import dev.custom.portals.util.*;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import dev.custom.portals.client.ClientUtil;
+import dev.custom.portals.network.ScreenTransitionPayload;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,7 +41,7 @@ public abstract class LevelLoadingScreenMixin extends Screen {
         if (ClientUtil.transitionBackgroundSpriteModel != null) {
             ClientUtil.isTransitioning = true;
             if (!packetSent) {
-                ClientPlayNetworking.send(new ScreenTransitionPayload(true));
+                ClientPacketDistributor.sendToServer(new ScreenTransitionPayload(true));
                 packetSent = true;
             }
             Identifier blockId = BuiltInRegistries.BLOCK.getKey(ClientUtil.transitionBackgroundSpriteModel);
@@ -53,7 +54,7 @@ public abstract class LevelLoadingScreenMixin extends Screen {
     @Inject(method = "onClose", at = @At("HEAD"))
     public void close(CallbackInfo ci) {
         ClientUtil.isTransitioning = false;
-        ClientPlayNetworking.send(new ScreenTransitionPayload(false));
+        ClientPacketDistributor.sendToServer(new ScreenTransitionPayload(false));
         ClientUtil.transitionBackgroundSpriteModel = null;
         packetSent = false;
     }

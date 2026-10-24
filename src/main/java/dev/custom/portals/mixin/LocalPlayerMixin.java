@@ -44,16 +44,15 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
         float f = 0.0F;
         if(((EntityMixinAccess)this).isInCustomPortal() && portal != null && this.portalProcess != null) {
             this.oPortalEffectIntensity = this.portalEffectIntensity;
-            Screen currentScreen = this.minecraft.gui.screen();
-            if (currentScreen != null && !currentScreen.isPauseScreen() && !(currentScreen instanceof DeathScreen)) {
-                if (currentScreen instanceof AbstractContainerScreen) {
+            if (this.minecraft.screen != null && !this.minecraft.screen.isPauseScreen() && !(this.minecraft.screen instanceof DeathScreen)) {
+                if (this.minecraft.screen instanceof AbstractContainerScreen) {
                     this.closeContainer();
                 }
 
-                this.minecraft.gui.setScreen((Screen)null);
+                this.minecraft.setScreen((Screen)null);
             }
 
-            if (!CPSettings.instance().muteTeleportSounds && this.portalEffectIntensity == 0.0F && portal.getPlayerTeleportDelay() > 1) {
+            if (!CPSettings.muteTeleportSounds() && this.portalEffectIntensity == 0.0F && portal.getPlayerTeleportDelay() > 1) {
                 this.minecraft.getSoundManager().play(SimpleSoundInstance.forLocalAmbience(SoundEvents.PORTAL_TRIGGER, this.random.nextFloat() * 0.4F + 0.8F, 0.25F));
             }
 

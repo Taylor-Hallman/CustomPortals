@@ -24,9 +24,9 @@ bin/
 .classpath
 .project
 
-# fabric
-
+# neoforge / moddevgradle run directories and local maven output
 run/
-run1/
-run2/
+runs/
+run-data/
+repo/
 .PVS-Studio/

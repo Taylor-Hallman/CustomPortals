@@ -1,11 +1,9 @@
 package dev.custom.portals.blocks;
 
 import com.mojang.serialization.MapCodec;
-import dev.custom.portals.CustomPortals;
 import dev.custom.portals.data.CustomPortal;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class HasteRuneBlock extends AbstractRuneBlock {
 
@@ -21,16 +19,12 @@ public class HasteRuneBlock extends AbstractRuneBlock {
     }
 
     @Override
-    public void registerOnPortal(CustomPortal portal, Level world) {
+    protected void applyTo(CustomPortal portal, Level world) {
         portal.addHaste();
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
     }
 
     @Override
-    public void unregisterOnPortal(CustomPortal portal, Level world) {
+    protected void removeFrom(CustomPortal portal, Level world) {
         portal.removeHaste();
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
     }
 }

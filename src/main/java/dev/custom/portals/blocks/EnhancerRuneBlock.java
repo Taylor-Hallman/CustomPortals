@@ -1,17 +1,11 @@
 package dev.custom.portals.blocks;
 
 import com.mojang.serialization.MapCodec;
-import dev.custom.portals.CustomPortals;
 import dev.custom.portals.data.CustomPortal;
-import dev.custom.portals.config.CPSettings;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
+import dev.custom.portals.data.PortalData;
+import dev.custom.portals.data.PortalRegistry;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class EnhancerRuneBlock extends AbstractRuneBlock {
 
@@ -27,20 +21,17 @@ public class EnhancerRuneBlock extends AbstractRuneBlock {
     }
 
     @Override
-    public void registerOnPortal(CustomPortal portal, Level world) {
+    protected void applyTo(CustomPortal portal, Level world) {
         portal.addWeakEnhancer();
-        CustomPortals.PORTALS.get(world).tryWithAll(portal);
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
+        PortalData.get(world).tryWithAll(portal);
     }
 
     @Override
-    public void unregisterOnPortal(CustomPortal portal, Level world) {
+    protected void removeFrom(CustomPortal portal, Level world) {
         portal.removeWeakEnhancer();
+        PortalRegistry registry = PortalData.get(world);
         if (portal.hasLinked())
-            CustomPortals.PORTALS.get(world).tryWithAll(portal.getLinked());
-        CustomPortals.PORTALS.get(world).tryWithAll(portal);
-        if (!world.isClientSide())
-            CustomPortals.PORTALS.get(world).syncWithAll(((ServerLevel)world).getServer());
+            registry.tryWithAll(portal.getLinked());
+        registry.tryWithAll(portal);
     }
 }

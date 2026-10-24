@@ -1,10 +1,14 @@
 package dev.custom.portals.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import dev.custom.portals.config.CPSettings;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.BlockPos;
@@ -47,6 +51,50 @@ public class CustomPortal {
         Codec.INT.fieldOf("strongEnhancerRunes").forGetter(CustomPortal::getStrongEnhancerRunes),
         Codec.INT.fieldOf("infinityRunes").forGetter(CustomPortal::getInfinityRunes)
     ).apply(instance, CustomPortal::new));
+
+    /** Wire format for client sync. Packed BlockPos longs keep large portals small (1 MiB payload cap). */
+    public static final StreamCodec<ByteBuf, CustomPortal> STREAM_CODEC = StreamCodec.of(CustomPortal::encode, CustomPortal::decode);
+
+    private static void encode(ByteBuf buf, CustomPortal portal) {
+        ByteBufCodecs.STRING_UTF8.encode(buf, portal.frameId);
+        ByteBufCodecs.STRING_UTF8.encode(buf, portal.dimensionId);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.getColorId());
+        BlockPos.STREAM_CODEC.encode(buf, portal.spawnPos);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.portalBlocks.size());
+        for (BlockPos pos : portal.portalBlocks) {
+            BlockPos.STREAM_CODEC.encode(buf, pos);
+        }
+        ByteBufCodecs.FLOAT.encode(buf, portal.offsetX);
+        ByteBufCodecs.FLOAT.encode(buf, portal.offsetZ);
+        ByteBufCodecs.STRING_UTF8.encode(buf, portal.getCreatorIdAsString());
+        ByteBufCodecs.VAR_INT.encode(buf, portal.hasteRunes);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.gateRunes);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.weakEnhancerRunes);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.strongEnhancerRunes);
+        ByteBufCodecs.VAR_INT.encode(buf, portal.infinityRunes);
+    }
+
+    private static CustomPortal decode(ByteBuf buf) {
+        String frameId = ByteBufCodecs.STRING_UTF8.decode(buf);
+        String dimensionId = ByteBufCodecs.STRING_UTF8.decode(buf);
+        int colorId = ByteBufCodecs.VAR_INT.decode(buf);
+        BlockPos spawnPos = BlockPos.STREAM_CODEC.decode(buf);
+        int count = ByteBufCodecs.VAR_INT.decode(buf);
+        List<BlockPos> portalBlocks = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            portalBlocks.add(BlockPos.STREAM_CODEC.decode(buf));
+        }
+        float offsetX = ByteBufCodecs.FLOAT.decode(buf);
+        float offsetZ = ByteBufCodecs.FLOAT.decode(buf);
+        String creatorId = ByteBufCodecs.STRING_UTF8.decode(buf);
+        int hasteRunes = ByteBufCodecs.VAR_INT.decode(buf);
+        int gateRunes = ByteBufCodecs.VAR_INT.decode(buf);
+        int weakEnhancerRunes = ByteBufCodecs.VAR_INT.decode(buf);
+        int strongEnhancerRunes = ByteBufCodecs.VAR_INT.decode(buf);
+        int infinityRunes = ByteBufCodecs.VAR_INT.decode(buf);
+        return new CustomPortal(frameId, dimensionId, colorId, spawnPos, portalBlocks, offsetX, offsetZ, creatorId,
+                hasteRunes, gateRunes, weakEnhancerRunes, strongEnhancerRunes, infinityRunes);
+    }
 
     public CustomPortal(final String frameId, final String dimensionId, final MapColor color, final BlockPos spawnPos,
                         final List<BlockPos> portalBlocks, final float offsetX, final float offsetZ, final UUID creatorId) {
@@ -109,6 +157,15 @@ public class CustomPortal {
         this.infinityRunes = infinityRunes;
     }
 
+    /**
+     * Independent copy of the persisted/synced fields, safe to hand to a packet that may be encoded off-thread.
+     * Runtime-only state ({@code linked}, {@code hasRedstoneSignal}) is not copied.
+     */
+    public CustomPortal snapshot() {
+        return new CustomPortal(frameId, dimensionId, color, spawnPos, List.copyOf(portalBlocks), offsetX, offsetZ,
+                creatorId, hasteRunes, gateRunes, weakEnhancerRunes, strongEnhancerRunes, infinityRunes);
+    }
+
     public String getFrameId() {
         return frameId;
     }
@@ -162,7 +219,7 @@ public class CustomPortal {
     }
 
     public int getPlayerTeleportDelay() {
-        if (CPSettings.instance().alwaysHaste == CPSettings.HasteEnum.YES)
+        if (CPSettings.alwaysHaste() == CPSettings.HasteEnum.YES)
             return 1;
         return this.hasHaste() ? 1 : 80;
     }
@@ -215,17 +272,17 @@ public class CustomPortal {
     }
 
     public void tryLink(final CustomPortal portal) {
-        if (CPSettings.instance().privatePortals && this.creatorId != null && portal.creatorId != null &&
+        if (CPSettings.privatePortals() && this.creatorId != null && portal.creatorId != null &&
                 !this.creatorId.equals(portal.getCreatorId())) return;
         if (portal.getColor() == color && portal.getFrameId().equals(frameId) && portal != this) {
             if (portal.hasLinked()) {
                 if (portal.getLinked() != this)
                     return;
             }
-            if (!CPSettings.instance().unlimitedRange || !CPSettings.instance().alwaysInterdim) {
+            if (!CPSettings.unlimitedRange() || !CPSettings.alwaysInterdim()) {
                 int distance;
                 if (!portal.getDimensionId().equals(dimensionId)) {
-                    if (!this.hasGate() && !portal.hasGate() && !CPSettings.instance().alwaysInterdim)
+                    if (!this.hasGate() && !portal.hasGate() && !CPSettings.alwaysInterdim())
                         return;
                     if (portal.getDimensionId().equals("minecraft:the_nether")) {
                         int translatedX = portal.getSpawnPos().getX() * 8;
@@ -241,19 +298,19 @@ public class CustomPortal {
                         distance = distance(translatedSpawnPos, portal.getSpawnPos());
                     } else distance = distance(spawnPos, portal.getSpawnPos());
                 } else distance = distance(spawnPos, portal.getSpawnPos());
-                if (!CPSettings.instance().unlimitedRange) {
+                if (!CPSettings.unlimitedRange()) {
                     int tier = Math.max(portal.getEnhanceTier(), this.getEnhanceTier());
                     switch (tier) {
                         case 0 -> {
-                            if (distance > CPSettings.instance().defaultRange)
+                            if (distance > CPSettings.defaultRange())
                                 return;
                         }
                         case 1 -> {
-                            if (distance > CPSettings.instance().rangeWithEnhancer)
+                            if (distance > CPSettings.rangeWithEnhancer())
                                 return;
                         }
                         case 2 -> {
-                            if (distance > CPSettings.instance().rangeWithStrongEnhancer)
+                            if (distance > CPSettings.rangeWithStrongEnhancer())
                                 return;
                         }
                     }
